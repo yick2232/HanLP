@@ -72,15 +72,15 @@ def build_transformer(transformer, max_seq_length, num_labels, tagging=True, tok
         ckpt = glob.glob(os.path.join(bert_dir, '*.index'))
         assert ckpt, f'No checkpoint found under {bert_dir}'
         ckpt, _ = os.path.splitext(ckpt[0])
-    with stdout_redirected(to=os.devnull):
-        if albert:
-            if spm_model_file:
-                skipped_weight_value_tuples = bert.load_albert_weights(l_bert, bert_dir)
-            else:
-                # noinspection PyUnboundLocalVariable
-                skipped_weight_value_tuples = load_stock_weights(l_bert, ckpt)
+    # with stdout_redirected(to=os.devnull):
+    if albert:
+        if spm_model_file:
+            skipped_weight_value_tuples = bert.load_albert_weights(l_bert, bert_dir)
         else:
             # noinspection PyUnboundLocalVariable
-            skipped_weight_value_tuples = bert.load_bert_weights(l_bert, ckpt)
+            skipped_weight_value_tuples = load_stock_weights(l_bert, ckpt)
+    else:
+        # noinspection PyUnboundLocalVariable
+        skipped_weight_value_tuples = bert.load_bert_weights(l_bert, ckpt)
     assert 0 == len(skipped_weight_value_tuples), f'failed to load pretrained {transformer}'
     return model, tokenizer
