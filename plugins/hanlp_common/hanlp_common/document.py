@@ -8,7 +8,7 @@ from typing import List, Union
 
 from phrasetree.tree import Tree
 
-from hanlp_common.conll import CoNLLUWord, CoNLLSentence
+from hanlp_common.conll import CoNLLUWord, CoNLLSentence, CoNLLSentenceList
 from hanlp_common.constant import PRED
 from hanlp_common.util import collapse_json, prefix_match
 from hanlp_common.visualization import tree_to_list, list_to_tree, render_labeled_span, make_table
@@ -113,7 +113,12 @@ class Document(dict):
             A :class:`~hanlp_common.conll.CoNLLSentence` representation.
 
         """
-        results = []
+        tok = prefix_match(tok, self)
+        lem = prefix_match(lem, self)
+        pos = prefix_match(pos, self)
+        dep = prefix_match(dep, self)
+        sdp = prefix_match(sdp, self)
+        results = CoNLLSentenceList()
         if not self[tok]:
             return results
         flat = isinstance(self[tok][0], str)
@@ -143,7 +148,7 @@ class Document(dict):
         return results
 
     def to_pretty(self, tok='tok', lem='lem', pos='pos', dep='dep', sdp='sdp', ner='ner', srl='srl', con='con',
-                  show_header=True) -> str:
+                  show_header=True) -> Union[str, List[str]]:
         """
         Convert to a pretty text representation which can be printed to visualize linguistic structures.
 
