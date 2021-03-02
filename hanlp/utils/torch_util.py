@@ -20,10 +20,10 @@ def gpus_available() -> dict:
         nvmlInit()
         gpus = {}
         visible_devices = os.environ.get('CUDA_VISIBLE_DEVICES', None)
-        if visible_devices:
-            visible_devices = {int(x.strip()) for x in visible_devices.split(',')}
-        else:
+        if visible_devices is None:
             visible_devices = list(range(nvmlDeviceGetCount()))
+        else:
+            visible_devices = {int(x.strip()) for x in visible_devices.split(',')}
         for i, real_id in enumerate(visible_devices):
             h = nvmlDeviceGetHandleByIndex(real_id)
             info = nvmlDeviceGetMemoryInfo(h)

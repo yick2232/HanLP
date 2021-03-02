@@ -67,7 +67,10 @@ HanLP = hanlp.load(hanlp.pretrained.mtl.CLOSE_TOK_POS_NER_SRL_DEP_SDP_CON_ELECTR
 HanLP(['2021年HanLPv2.1为生产环境带来次世代最先进的多语种NLP技术。', '阿婆主来到北京立方庭参观自然语义科技公司。'])
 ```
 
-Native API的输入为句子单位，需使用[多语种分句模型](https://hanlp.hankcs.com/docs/api/hanlp/pretrained/eos.html)或基于规则的分句函数先行分句。特别地，Python `HanLPClient`也支持当作函数调用，在语义上完全一致。请参考[HanLP官方文档](https://hanlp.hankcs.com/docs/)了解更多细节。
+Native API的输入单位为句子，需使用[多语种分句模型](https://github.com/hankcs/HanLP/blob/master/plugins/hanlp_demo/hanlp_demo/sent_split.py)或[基于规则的分句函数](https://github.com/hankcs/HanLP/blob/master/hanlp/utils/rules.py#L19)先行分句。特别地，Python `HanLPClient`也支持当作函数调用，在语义上完全一致。简洁的接口也支持灵活的参数，常用的技巧有：
+
+- 灵活的`tasks`任务调度，任务越少，速度越快。如`HanLP('商品和服务', tasks='tok')`指定仅执行分词；大多数任务依赖分词，`tasks='dep'`会执行分词和依存句法分析；而`tasks=['pos', 'dep'], skip_tasks='tok*'`表示跳过分词仅执行词性标注和依存句法分析，此时需传入单词列表；`skip_tasks='tok/fine'`表示使用粗分标准分词并执行后续任务。在内存有限的场景下，用户还可以[删除不需要的任务](https://bbs.hankcs.com/t/topic/3354)达到模型瘦身的效果。
+- 高效的trie树自定义词典，以及强制、合并、校正3种规则，请参考[demo](https://github.com/hankcs/HanLP/blob/master/plugins/hanlp_demo/hanlp_demo/zh/demo_custom_dict.py)和[文档](https://hanlp.hankcs.com/docs/api/hanlp/components/tokenizers/transformer.html)。规则系统的效果将无缝应用到后续统计模型，从而快速适应新领域。
 
 ### 输出格式
 
@@ -164,7 +167,7 @@ Dep Tree    	Tok	Relat	Po	Tok	NER Type        	Tok	SRL PA1 	Tok	SRL PA2 	Tok	Po 
 └──────────►	。  	punct	PU	。  	                	。  	        	。  	        	。  	PU──────────────────────────┘   
 ```
 
-关于标注集含义，请参考[《语言学标注规范及文件格式》](https://hanlp.hankcs.com/docs/annotations/index.html)。我们购买、标注或采用了世界上量级最大、种类最多的语料库用于联合多语种多任务学习，所以HanLP的标注集也是覆盖面最广的。
+关于标注集含义，请参考[《语言学标注规范》](https://hanlp.hankcs.com/docs/annotations/index.html)及[《格式规范》](https://hanlp.hankcs.com/docs/data_format.html)。我们购买、标注或采用了世界上量级最大、种类最多的语料库用于联合多语种多任务学习，所以HanLP的标注集也是覆盖面最广的。
 
 ## 训练你自己的领域模型
 
